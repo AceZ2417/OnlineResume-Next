@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+/*
+ * 简历主题色桥接：
+ * --resume-color / --resume-tag-color 由 App 在运行时根据
+ * resume.theme 注入（内联样式）。这里通过 @theme inline 把它们
+ * 注册为 Tailwind 颜色 token，即可使用 bg-resume / border-resume /
+ * text-resume / bg-resume/20 等类，透明度修饰符由 Tailwind 自动处理。
+ */
+@theme inline {
+  --color-resume: var(--resume-color);
+  --color-resume-tag: var(--resume-tag-color);
+}
+
+/* 默认主题色（App 运行时会被 resume.theme 覆盖） */
+:root {
+  --resume-color: rgba(91, 143, 249, 1);
+  --resume-tag-color: #8bc34a;
+}

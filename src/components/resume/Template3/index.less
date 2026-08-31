@@ -1,0 +1,167 @@
+.template3-resume {
+  width: 794px;
+  margin-bottom: 60px;
+  box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.15);
+  background: #fff;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 24px;
+
+  @media (max-width: 794px) {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .row-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+/* Ribbon + Card 容器（纯 CSS 替换 antd Badge.Ribbon + Card） */
+.ribbon-card {
+  position: relative;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 16px;
+  padding-top: 24px;
+  background: #fff;
+  overflow: hidden;
+
+  .ribbon {
+    position: absolute;
+    top: 12px;
+    left: -12px;
+    padding: 2px 24px 2px 20px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 22px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 6px 0 0 10px;
+      border-color: transparent transparent transparent rgba(0, 0, 0, 0.35);
+      filter: brightness(0.7);
+    }
+  }
+}
+
+.template3-resume .basic-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap-reverse;
+
+  .profile-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .name {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+
+  .profile-list .item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    word-break: break-all;
+
+    a {
+      color: inherit;
+      &:hover { text-decoration: underline; }
+    }
+  }
+
+  .profile-avatar {
+    flex-shrink: 0;
+  }
+}
+
+.template3-resume .section-header h1 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  padding: 2px 0 2px 12px;
+  border-radius: 2px;
+  margin: 12px 0 10px;
+  display: inline-block;
+  min-width: 140px;
+}
+
+.template3-resume .section-item {
+  margin-bottom: 14px;
+}
+
+.template3-resume .section-info {
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.template3-resume .sub {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  font-weight: normal;
+  margin-left: 6px;
+}
+
+.template3-resume .tag {
+  color: #fff;
+  font-size: 12px;
+  padding: 1px 10px;
+  border-radius: 10px;
+  margin-left: 6px;
+  font-weight: normal;
+}
+
+.template3-resume .section-detail {
+  margin-top: 4px;
+  b { font-weight: 600; }
+}
+
+.template3-resume .work-desc,
+.template3-resume .project-content {
+  white-space: pre-wrap;
+}
+
+.template3-resume .education-item + .education-item {
+  margin-top: 10px;
+}
+.template3-resume .skill-item { margin-top: 4px; }
+
+@media print {
+  @page { size: A4; }
+
+  .template3-resume {
+    width: 100%;
+    box-shadow: none;
+    margin-bottom: 0;
+    padding: 12mm;
+  }
+}

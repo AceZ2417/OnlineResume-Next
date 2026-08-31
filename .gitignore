@@ -1,0 +1,16 @@
+# 依赖与构建产物
+node_modules
+dist
+dist-ssr
+*.local
+
+# 沙箱环境本地缓存目录
+.npm-cache
+.npm-logs
+.xdg-config
+
+# 编辑器与系统文件
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store

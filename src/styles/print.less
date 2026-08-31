@@ -1,0 +1,86 @@
+/* =========================================================
+   打印样式：隐藏全部非简历 UI，保留简历预览单张
+   使用方式：浏览器打印按钮 / 预览面板 🖨️ Print 按钮
+   ========================================================= */
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html, body, #root {
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 顶栏、移动端Tab、远程错误提示、编辑器面板全隐藏 */
+  header,
+  .app-mobile-tabs,
+  .app-alert,
+  .app-editor-col,
+  .app-editor-wrapper,
+  .editor-footer,
+  .toolbar-preview-header,
+  .preview-panel-header {
+    display: none !important;
+  }
+
+  /* 全局容器：取消网格、边距、背景色 */
+  .app-root,
+  .app-main,
+  .app-main-grid,
+  .app-preview-col,
+  .app-preview-panel,
+  .app-preview-outer,
+  .app-preview-inner,
+  .resume-preview {
+    background: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .app-main-grid {
+    display: block !important;
+    grid: none !important;
+  }
+
+  .app-preview-col {
+    display: block !important;
+  }
+
+  /* 简历纸尺寸（A4: 210mm × 297mm） */
+  .app-resume-paper {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #fff !important;
+    width: 210mm !important;
+    max-width: 100% !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* 各模板内部打印样式已在每个模板的 index.less 里覆盖 box-shadow 等 */
+  .template1-resume,
+  .template2-resume,
+  .template3-resume {
+    width: 210mm !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    page-break-inside: auto;
+  }
+
+  .resume-content {
+    font-size: 12pt;
+  }
+}

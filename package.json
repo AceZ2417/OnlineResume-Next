@@ -1,0 +1,36 @@
+{
+  "name": "resume-next",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "现代化 Vite + React 19 在线简历编辑器（3 套模板 / i18n 中英双语 / 实时预览 / 打印 PDF / 草稿自动保存）",
+  "homepage": "https://AceZ2417.github.io/OnlineResume-Next/",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@hookform/resolvers": "^5.9.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "i18next": "^26.4.0",
+    "i18next-browser-languagedetector": "^8.2.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-hook-form": "^7.87.0",
+    "react-i18next": "^17.0.12",
+    "tailwindcss": "^4.3.3",
+    "zod": "^4.5.4",
+    "zustand": "^5.0.5"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.4.1",
+    "less": "^4.9.0",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5"
+  }
+}

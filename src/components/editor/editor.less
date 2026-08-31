@@ -1,0 +1,218 @@
+/* 编辑器通用样式：Tailwind + 一些覆盖 less 的细节样式 */
+.sortable-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sortable-item {
+  position: relative;
+  padding: 12px 36px 12px 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: #cbd5e1;
+  }
+
+  .drag-handle {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    color: #94a3b8;
+    user-select: none;
+    font-size: 14px;
+    &:hover { background: #f1f5f9; color: #64748b; }
+    &:active { cursor: grabbing; }
+  }
+
+  .remove-btn {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    width: 22px;
+    height: 22px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #94a3b8;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover { background: #fee2e2; color: #dc2626; }
+  }
+}
+
+.sortable-list .add-btn {
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  color: #475569;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.15s;
+  &:hover { border-color: var(--resume-color, #5b8ff9); color: var(--resume-color, #5b8ff9); background: #f8fafc; }
+}
+
+/* FormField 基础样式 */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+
+  label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #475569;
+  }
+
+  input[type=text],
+  input[type=url],
+  input[type=email],
+  input[type=tel],
+  input[type=number],
+  input[type=color],
+  textarea,
+  select {
+    width: 100%;
+    padding: 6px 10px;
+    font-size: 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    background: #fff;
+    color: #0f172a;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+    &:focus { outline: none; border-color: var(--resume-color, #5b8ff9); box-shadow: 0 0 0 2px color-mix(in srgb, var(--resume-color, #5b8ff9) 25%, transparent); }
+  }
+
+  textarea { resize: vertical; min-height: 80px; font-family: inherit; line-height: 1.5; }
+
+  .field-error {
+    color: #dc2626;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .field-hint {
+    color: #94a3b8;
+    font-size: 12px;
+  }
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 编辑区分组卡片 */
+.editor-section {
+  margin-bottom: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+.editor-section summary {
+  padding: 10px 14px;
+  background: #f8fafc;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  border-bottom: 1px solid #e5e7eb;
+  &::-webkit-details-marker { display: none; }
+  &::after {
+    content: '▼';
+    font-size: 10px;
+    color: #94a3b8;
+    transition: transform 0.2s;
+  }
+}
+.editor-section[open] summary::after { transform: rotate(180deg); }
+.editor-section .editor-section-body {
+  padding: 12px 14px 14px;
+}
+
+/* 开关行 */
+.switch-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #475569;
+  label { font-weight: 500; margin: 0; }
+}
+
+/* 颜色输入：让 input[type=color] 宽一点 */
+input[type=color] { height: 34px; padding: 2px; }
+
+/* 编辑器保存按钮 */
+.editor-footer {
+  position: sticky;
+  bottom: 0;
+  margin: -14px;
+  margin-top: 0;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  z-index: 2;
+}
+
+.btn-primary {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 5px;
+  background: var(--resume-color, #5b8ff9);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter 0.15s;
+  &:hover { filter: brightness(1.07); }
+}
+.btn-ghost {
+  padding: 7px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  background: #fff;
+  color: #475569;
+  font-size: 13px;
+  cursor: pointer;
+  &:hover { border-color: #94a3b8; }
+}
+
+/* 拖拽列表中的子表单间距 */
+.sortable-item form { display: contents; }
+.item-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+.item-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px 12px; }
