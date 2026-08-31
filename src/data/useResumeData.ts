@@ -17,12 +17,13 @@ function isSameAsDefault(a: ResumeConfig): boolean {
 
 /**
  * 远程简历 JSON 的绝对地址（注意：新仓库 OnlineResume-Next 本身没有实时数据）。
- * 线上简历是旧部署在 AceZ2417/OnlineRresume 仓库 Pages 根下的 resume.json，
- * 直接用绝对 https 读取，避免 Vite BASE_URL 拼接的 /OnlineResume-Next/resume.json
- * 指向新仓库静态占位文件，始终拉不到用户最新内容。
+ * 线上简历是旧 Gatsby 2 站在 OnlineRresume Pages 下的静态资源：
+ *   旧仓库文件 static/resume/resume.json
+ *   → Gatsby build 时拷贝到 Pages 子路径 /resume/resume.json
+ *   → 线上地址：https://acez2417.github.io/OnlineRresume/resume/resume.json（已验证可访问）。
  */
 export const REMOTE_RESUME_URL =
-  'https://acez2417.github.io/OnlineRresume/resume.json';
+  'https://acez2417.github.io/OnlineRresume/resume/resume.json';
 
 const FETCH_TIMEOUT_MS = 8_000;
 
