@@ -10,6 +10,11 @@ concurrency:
   group: pages-${{ github.ref }}
   cancel-in-progress: true
 
+# 消除 GitHub Actions runner 对 Node.js 20 的弃用告警
+# （参考 https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/）
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 permissions:
   contents: read
   pages: write
@@ -23,10 +28,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 24 (LTS)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -48,6 +53,9 @@ jobs:
         env:
           BASE_PATH: ${{ steps.base.outputs.path }}
         run: npm run build
+
+      - name: Setup Pages (必须在上传前配置：写入 Pages artifact 元数据)
+        uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
