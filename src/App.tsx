@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import Toolbar from '@/components/Toolbar';
 import EditorPanel from '@/components/EditorPanel';
 import PreviewPanel from '@/components/PreviewPanel';
@@ -48,7 +49,7 @@ function useDraftAutoSave(get: () => Partial<ResumeConfig>, deps: React.Dependen
 }
 
 export default function App() {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
   const resume = useResumeStore((s) => s.resume);
   const setResume = useResumeStore((s) => s.setResume);
   const { loading, error, reload, fallback } = useResumeData();
@@ -141,7 +142,7 @@ export default function App() {
     setDraftPrompt(null);
   };
 
-  if (loading) {
+  if (loading || !ready || !i18next.isInitialized) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100 text-gray-500">
         {t('app.loading')}

@@ -32,6 +32,14 @@ i18n
       order: ['localStorage', 'navigator', 'querystring'],
       caches: ['localStorage'],
     },
+    // 关闭 react-i18next 的 Suspense 模式：
+    //   否则 init 在微任务阶段初始化资源时，任何顶层 useTranslation()
+    //   都会让整棵树“挂起”（没渲染 Loading 文案），给用户观感是白屏 / 一直“正在加载…”。
+    react: {
+      useSuspense: false,
+      bindI18n: 'languageChanged loaded',
+      bindI18nStore: 'added removed',
+    },
   });
 
 export default i18n;

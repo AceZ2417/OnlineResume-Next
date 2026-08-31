@@ -16,15 +16,16 @@ function isSameAsDefault(a: ResumeConfig): boolean {
 }
 
 /**
- * 远程 resume.json 加载器。
- * 启动时尝试从 ${BASE_URL}resume.json 加载并校验，
- * 仅当用户未编辑过本地数据时才覆盖 store；
- * 失败（网络 / 校验）时静默回退内置默认数据。
- *
- * BASE_URL 由 Vite 注入：
- *   开发模式 "/" → "resume.json"
- *   生产模式 "/resume-next/" → "/resume-next/resume.json"
+ * 远程简历 JSON 的绝对地址（注意：新仓库 OnlineResume-Next 本身没有实时数据）。
+ * 线上简历是旧部署在 AceZ2417/OnlineRresume 仓库 Pages 根下的 resume.json，
+ * 直接用绝对 https 读取，避免 Vite BASE_URL 拼接的 /OnlineResume-Next/resume.json
+ * 指向新仓库静态占位文件，始终拉不到用户最新内容。
  */
+export const REMOTE_RESUME_URL =
+  'https://acez2417.github.io/OnlineRresume/resume.json';
+
+const FETCH_TIMEOUT_MS = 8_000;
+
 export function useResumeData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,21 +33,30 @@ export function useResumeData() {
   const setResume = useResumeStore((s) => s.setResume);
   const reset = useResumeStore((s) => s.reset);
   const currentResume = useResumeStore((s) => s.resume);
+  // persist 重新水化完成后才允许读取 localStorage 里的权威数据
+  const hasHydrated = useResumeStore.persist.hasHydrated();
 
   useEffect(() => {
     let cancelled = false;
-    const url = `${import.meta.env.BASE_URL}resume.json`;
 
-    /**
-     * 守卫：只有当用户未做过本地编辑时，才用远程 JSON 覆盖。
-     * 否则 localStorage 中的用户编辑数据是权威，跳过远程。
-     */
+    // 1. Zustand persist 尚未完成 localStorage 读取 → 无法判断 isSameAsDefault，
+    //    直接 return，下一次重渲染（hydrate 后 state 更新触发 useEffect 重跑）。
+    if (!hasHydrated) return;
+
+    // 2. 守卫：只有当用户未做过本地编辑时，才用远程 JSON 覆盖。
+    //    否则 localStorage 中的用户编辑数据是权威，跳过远程。
     if (!isSameAsDefault(currentResume)) {
       setLoading(false);
       return;
     }
 
-    fetch(url)
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(
+      () => controller.abort(new Error('fetch timeout')),
+      FETCH_TIMEOUT_MS,
+    );
+
+    fetch(REMOTE_RESUME_URL, { signal: controller.signal, cache: 'no-store' })
       .then(async (resp) => {
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         return resp.json();
@@ -61,28 +71,46 @@ export function useResumeData() {
       })
       .catch((err: unknown) => {
         if (cancelled) return;
-        const message = err instanceof Error ? err.message : String(err);
+        const message =
+          err instanceof Error
+            ? err.name === 'AbortError'
+              ? 'timeout'
+              : err.message
+            : String(err);
         console.warn('[useResumeData] 远程 resume.json 加载失败，使用内置默认数据。', message);
         setError(message);
         // 不调用 setResume，store 初始值已经是 defaultResume
       })
       .finally(() => {
+        window.clearTimeout(timeoutId);
         if (!cancelled) setLoading(false);
       });
 
     return () => {
       cancelled = true;
+      window.clearTimeout(timeoutId);
+      controller.abort();
     };
-  }, [setResume, currentResume]);
+    // 显式依赖 hasHydrated：hydrate 完成会触发重渲染，useEffect 重新执行
+  }, [setResume, currentResume, hasHydrated]);
 
   /** 手动触发重新加载 */
   const reload = useCallback(() => {
     setLoading(true);
     setError(null);
-    // 强制刷新 fetch 缓存
-    const url = `${import.meta.env.BASE_URL}resume.json?t=${Date.now()}`;
-    fetch(url)
-      .then((resp) => resp.json())
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(
+      () => controller.abort(new Error('fetch timeout')),
+      FETCH_TIMEOUT_MS,
+    );
+    fetch(`${REMOTE_RESUME_URL}?t=${Date.now()}`, {
+      signal: controller.signal,
+      cache: 'no-store',
+    })
+      .then((resp) => {
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        return resp.json();
+      })
       .then((raw) => {
         const result = resumeSchema.safeParse(raw);
         if (!result.success) throw new Error('schema mismatch');
@@ -91,7 +119,10 @@ export function useResumeData() {
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : String(err));
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        window.clearTimeout(timeoutId);
+        setLoading(false);
+      });
   }, [setResume]);
 
   /** 手动恢复默认数据（忽略远程文件） */
@@ -138,6 +169,3 @@ export function downloadResume(data: ResumeConfig): void {
   a.remove();
   URL.revokeObjectURL(url);
 }
-
-/** 远程 URL （BASE_URL 拼接） */
-export const REMOTE_RESUME_URL = `${import.meta.env.BASE_URL}resume.json`;
