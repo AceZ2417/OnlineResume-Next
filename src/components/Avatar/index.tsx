@@ -16,21 +16,40 @@ export type AvatarProps = {
 export function Avatar({ avatarSrc, className, shape = 'circle', size = 'default' }: AvatarProps) {
   const sizeMap: Record<string, number> = { small: 48, default: 84, large: 120 };
   const px = typeof size === 'number' ? size : sizeMap[String(size)] ?? sizeMap.default;
+  const borderRadius = shape === 'circle' ? '50%' : 4;
 
-  const style: React.CSSProperties = {
+  const outerStyle: React.CSSProperties = {
     width: px,
     height: px,
-    borderRadius: shape === 'circle' ? '50%' : 4,
+    borderRadius,
+    overflow: 'hidden',
+  };
+
+  const imgStyle: React.CSSProperties = {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    display: 'block',
+    border: '1px solid rgba(0, 0, 0, 0.06)',
+    background: '#fafafa',
+  };
+
+  const emptyStyle: React.CSSProperties = {
+    width: '100%',
+    height: '100%',
+    background: '#f3f4f6',
+    border: '1px dashed #d1d5db',
+    borderRadius,
   };
 
   const cls = `avatar ${!avatarSrc ? 'avatar-hidden' : ''} ${className ?? ''}`.trim();
 
   return (
-    <div className={cls}>
+    <div className={cls} style={outerStyle}>
       {avatarSrc ? (
-        <img src={avatarSrc} alt="avatar" style={style} className="avatar-img" />
+        <img src={avatarSrc} alt="avatar" style={imgStyle} className="avatar-img" />
       ) : (
-        <div className="avatar-empty" style={style} />
+        <div className="avatar-empty" style={emptyStyle} />
       )}
     </div>
   );
