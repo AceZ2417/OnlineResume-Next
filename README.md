@@ -21,10 +21,11 @@ npm run build     # 类型检查 + 生产构建（产物在 dist/）
 npm run preview   # 预览 dist 构建
 ```
 
-> 需要 Node.js ≥ 20、npm ≥ 10。
+> **运行环境**：推荐 Node.js 24 LTS（与 GitHub Actions 工作流一致），最低兼容 Node.js 20+；npm ≥ 10。
+>
+> 主流浏览器（Chrome / Edge / Firefox / Safari 近 3 年版本）开箱即用，构建目标 `es2020 / chrome90`。
 
-打开浏览器访问 http://localhost:5173/ ，默认加载远程简历：
-`https://AceZ2417.github.io/OnlineRresume/resume.json`。若远程不可用会自动降级到本地默认模板。
+打开浏览器访问 http://localhost:5173/ ，默认从本项目 `public/resume.json`（部署后即 `<BASE_URL>resume.json`）加载简历；远程不可用时自动降级到内置默认数据。
 
 ---
 
@@ -41,6 +42,8 @@ npm run preview   # 预览 dist 构建
 | 国际化 | **react-i18next + i18next-browser-languagedetector**（UI key 与简历内容 `locales.en` 双路）|
 | 打印 | `@media print` 独立样式，A4 单张输出背景色 |
 | 草稿 | 独立 key `resume-next-draft`，300 ms 防抖自动保存，启动时提示恢复 |
+| 头像 | 纯 DOM `Avatar` 组件（脱离 antd Avatar），尺寸支持 small/default/large/数字像素，**本地上传自动 Canvas 压缩到 ≤800px JPEG 0.85** 防止 localStorage 超限 |
+| 图标 | 模板图标统一使用 `@ant-design/icons` SVG 图标（MobileFilled / PhoneFilled / CrownFilled …），8px margin、主题色、0.85 opacity，1:1 对齐旧版视觉 |
 | 构建 | `tsc --noEmit` + Vite rollup，产物 gzip ≈ 153 KB + 6.2 KB CSS |
 
 ---
@@ -145,9 +148,57 @@ resume-next/
 | 切换简历内容到英文 | 切语言到 English；如果 `resume.locales.en` 字段存在且合法，预览自动使用英文版内容 |
 | 打印 / 导出 PDF | 预览区右上角 🖨️ Print → 打印机选「另存为 PDF」即可 |
 | 修改主题色 | 编辑器 → 主题（Theme）→ 颜色输入 / 标签色输入 |
+| 上传本地头像 | 编辑器 → 头像（Avatar）→ 「📁 本地上传」选图，自动压缩；URL 字段留空时可用「清除头像」移除 |
+| 调整头像尺寸/形状 | 编辑器 → 头像 → 尺寸（小/默认/大）/ 形状（圆/方），预览实时生效 |
 
 ---
 
 ## 浏览器兼容
 
 构建目标 `es2020 / chrome90`，覆盖近 3 年主流浏览器（Chrome / Edge / Firefox / Safari）。
+
+---
+
+## 开发到部署全流程
+
+一条命令链串起从拉代码到上线：
+
+```bash
+# 1. 拉代码 + 装依赖（Node 24 推荐，Node 20+ 兼容）
+git clone https://github.com/<USER>/OnlineResume-Next.git
+cd OnlineResume-Next
+npm install
+
+# 2. 本地开发（http://localhost:5173，热更新）
+npm run dev
+
+# 3. 类型检查 + 生产构建（产物在 dist/）
+npm run build
+
+# 4. 本地预览构建产物（验证 BASE_PATH='./' 相对路径）
+npm run preview
+
+# 5. 提交并推送到 main —— 触发 GitHub Actions 自动部署
+git add -A
+git commit -m "feat: <message>"
+git push origin main
+```
+
+> 推送后到仓库 **Actions** 页查看部署进度，跑完即可访问 `https://<USER>.github.io/<REPO>/`。
+> 部署后浏览器可能缓存旧版，按 **Ctrl+F5 / Ctrl+Shift+R** 强刷即可看到最新效果。
+
+### 修改简历内容
+
+- **临时预览**：左侧编辑器改字段，右侧 200 ms 内实时刷新。
+- **永久保存**：点编辑器底部「保存到简历」写入 zustand persist（localStorage key = `resume-next-storage`）。
+- **生产部署**：编辑 `public/resume.json`（仓库内），push 后 Actions 会把最新 JSON 一并部署到 Pages。
+
+### 常见问题速查
+
+| 现象 | 原因 / 解决 |
+|------|-------------|
+| 一直显示「正在加载简历数据…」 | 远程 resume.json 路径不对或 404；确认 `public/resume.json` 存在且 BASE_PATH 正确 |
+| 改了代码看不到效果 | 浏览器缓存；Ctrl+F5 强刷 |
+| 部署后头像/图标变形 | 模板 hardcode 覆盖动态尺寸；已移除，若自行改样式请勿在 less 里写死 width/height |
+| Actions 部署 403 | 仓库 Settings → Actions → General → Workflow permissions 改为 `Read and write permissions` |
+| Pages 404 | Settings → Pages → Source 必须选 `GitHub Actions`（不是 Deploy from branch）|
