@@ -4,16 +4,14 @@
   margin-bottom: 60px;
   display: grid;
   grid-template-columns: 2fr 3fr;
-  box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.15);
-  background: #fff;
-  font-size: 14px;
-  line-height: 1.5;
+  box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.15);
 
   @media (max-width: 794px) {
     width: 100%;
     grid-template-columns: 1fr;
   }
 
+  // 布局位置
   .basic-info {
     padding: 24px 18px 24px 24px;
   }
@@ -24,6 +22,7 @@
     background: #f2f2f2;
   }
 
+  // 内容样式 通用
   section {
     &:not(:first-of-type) {
       margin-top: 24px;
@@ -34,7 +33,6 @@
       font-size: 24px;
       line-height: 32px;
       letter-spacing: 0;
-      font-weight: bold;
     }
 
     .section-info {
@@ -45,57 +43,82 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 4px;
     }
   }
 
+  .basic-info section .section-info {
+    .info-name {
+      max-width: 198px;
+      padding-right: 4px;
+    }
+  }
+
+  // basic-info 内容样式
   .basic-info .avatar {
     margin: 12px auto;
     display: block;
+    width: 84px;
+    height: 84px;
   }
 
   .basic-info .name {
     margin: 8px auto 24px;
     font-size: 24px;
     text-align: center;
-    font-weight: bold;
   }
 
-  .basic-info .profile-list {
+  .basic-info .profile .profile-list {
     margin-bottom: 24px;
 
-    > .item {
+    > div {
       display: flex;
       align-items: center;
-      word-break: break-all;
+    }
+    > div:not(:last-of-type) {
+      margin-bottom: 4px;
+    }
 
-      &:not(:last-of-type) {
-        margin-bottom: 4px;
-      }
+    .icon {
+      margin-right: 8px;
+    }
 
-      a {
-        color: inherit;
-        &:hover { text-decoration: underline; }
-      }
+    a {
+      color: inherit;
+      &:hover { text-decoration: underline; }
     }
   }
 
-  .basic-info .section-skill .info-name {
-    margin-top: 12px;
+  // 非通用，skill
+  .basic-info .section-skill {
+    .section-info {
+      margin-top: 12px;
+    }
+
+    .skill-rate {
+      font-size: 14px;
+      display: flex;
+      color: #fadb14;
+    }
+
+    .skill-rate-empty {
+      color: #e8e8e8;
+    }
+
+    .skill-detail-item {
+      margin-top: 4px;
+    }
   }
 
-  .basic-info .section-skill .skill-detail-item {
-    margin-top: 4px;
-  }
-
-  .sub-info {
+  // 非通用
+  .basic-info section .sub-info {
     color: rgba(0, 0, 0, 0.45);
   }
 
-  .basic-info .section-award .sub-info.award-time {
-    font-size: 12px;
-    margin-left: 8px;
+  .basic-info .section-award {
+    .sub-info {
+      font-size: 14px;
+      margin-left: 8px;
+    }
   }
 
   .basic-info .education-item {
@@ -104,27 +127,36 @@
     }
   }
 
-  .basic-info .section-work a.sub-info {
-    font-size: 12px;
-    margin-left: 8px;
-    color: rgba(91, 143, 249, 1);
+  .basic-info .section-work {
+    > div {
+      line-height: 24px;
+    }
+
+    a.sub-info {
+      font-size: 12px;
+      margin-left: 8px;
+    }
   }
 
+  // main-info 内容样式
   .main-info section {
     margin-bottom: 16px;
 
     .section-header {
       display: flex;
       margin-bottom: 10px;
-      align-items: center;
 
-      img { margin-right: 8px; }
+      img {
+        margin-right: 8px;
+      }
 
       h1 {
         position: relative;
         font-size: 18px;
         font-weight: bold;
         color: #fff;
+        width: 200px;
+        width: max-content;
         line-height: 26px;
         padding: 0 100px 0 10px;
         border-top-left-radius: 3px;
@@ -145,22 +177,24 @@
 
     .section-detail {
       letter-spacing: 1.2px;
+
       &:not(:first-of-type) {
         margin-top: 4px;
       }
     }
   }
 
+  // 非通用
   .main-info .section-project,
   .main-info .section-work-exp {
-    .tag {
-      display: inline-block;
+    .section-info .tag {
+      line-height: 20px;
+      height: 20px;
+      border: none;
       color: #fff;
       font-size: 12px;
-      line-height: 20px;
       padding: 0 8px;
-      border-radius: 10px;
-      margin-left: 8px;
+      border-radius: 2px;
     }
 
     .section-item:not(:first-of-type) {
@@ -187,7 +221,9 @@
 }
 
 @media print {
-  @page { size: A4; }
+  @page {
+    size: A4;
+  }
 
   .template1-resume {
     width: 100%;
@@ -195,7 +231,5 @@
     grid-template-columns: 2fr 3fr;
     box-shadow: none;
     margin-bottom: 0;
-    min-height: auto;
-    break-inside: avoid-page;
   }
 }

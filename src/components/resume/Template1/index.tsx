@@ -41,27 +41,54 @@ export function Template1({ value, locale }: Props) {
             avatarSrc={value.avatar?.src}
             className="avatar"
             shape={value.avatar?.shape as 'circle' | 'square' | undefined}
-            size={value.avatar?.size}
+            size={value.avatar?.size ?? 84}
           />
         )}
         <div className="profile">
           {profile?.name && <div className="name">{profile.name}</div>}
           <div className="profile-list">
-            {profile?.mobile && <div className="item">📱 {profile.mobile}</div>}
-            {profile?.email && <div className="item">✉️ {profile.email}</div>}
+            {profile?.mobile && (
+              <div className="item">
+                <span className="icon" style={{ color, opacity: 0.85 }}>📱</span>
+                {profile.mobile}
+              </div>
+            )}
+            {profile?.email && (
+              <div className="item">
+                <span className="icon" style={{ color, opacity: 0.85 }}>✉️</span>
+                {profile.email}
+              </div>
+            )}
             {profile?.github && (
               <div className="item">
-                🐙 <a href={profile.github} target="_blank" rel="noreferrer">{profile.github}</a>
+                <span className="icon" style={{ color, opacity: 0.85 }}>🐙</span>
+                <a href={profile.github} target="_blank" rel="noreferrer">{profile.github}</a>
               </div>
             )}
             {profile?.zhihu && (
               <div className="item">
-                💡 <a href={profile.zhihu} target="_blank" rel="noreferrer">{profile.zhihu}</a>
+                <span className="icon" style={{ color, opacity: 0.85 }}>💡</span>
+                <a href={profile.zhihu} target="_blank" rel="noreferrer">{profile.zhihu}</a>
               </div>
             )}
-            {profile?.workExpYear && <div className="item">⏰ 工作经验：{profile.workExpYear}</div>}
-            {profile?.workPlace && <div className="item">📍 期望工作地：{profile.workPlace}</div>}
-            {profile?.positionTitle && <div className="item">💼 职位：{profile.positionTitle}</div>}
+            {profile?.workExpYear && (
+              <div className="item">
+                <span className="icon" style={{ color, opacity: 0.85 }}>⏰</span>
+                <span>工作经验: {profile.workExpYear}</span>
+              </div>
+            )}
+            {profile?.workPlace && (
+              <div className="item">
+                <span className="icon" style={{ color, opacity: 0.85 }}>📍</span>
+                <span>期望工作地: {profile.workPlace}</span>
+              </div>
+            )}
+            {profile?.positionTitle && (
+              <div className="item">
+                <span className="icon" style={{ color, opacity: 0.85 }}>💼</span>
+                <span>职位: {profile.positionTitle}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -82,12 +109,14 @@ export function Template1({ value, locale }: Props) {
                   <div>
                     <b>{edu.school}</b>
                     <span className="sub-info" style={{ float: 'right' }}>
-                      {start}{end ? ` ~ ${end}` : ''}
+                      {start}{end ? ` ~ ${end}` : ' 至今'}
                     </span>
                   </div>
                   <div>
                     {edu.major && <span>{edu.major}</span>}
-                    {edu.academic_degree && <span className="sub-info" style={{ marginLeft: 4 }}>（{edu.academic_degree}）</span>}
+                    {edu.academic_degree && (
+                      <span className="sub-info" style={{ marginLeft: 4 }}>（{edu.academic_degree}）</span>
+                    )}
                   </div>
                 </div>
               );
@@ -101,10 +130,10 @@ export function Template1({ value, locale }: Props) {
             {value.workList.map((work, i) => (
               <div key={i}>
                 <div>
-                  <span style={{ color: '#ffc107', marginRight: 8 }}>🏆</span>
+                  <span className="icon" style={{ color: '#ffc107', marginRight: 8 }}>👑</span>
                   <b className="info-name">{work.work_name}</b>
                   {work.visit_link && (
-                    <a className="sub-info" href={work.visit_link} target="_blank" rel="noreferrer"> 访问链接</a>
+                    <a className="sub-info" href={work.visit_link} target="_blank" rel="noreferrer">访问链接</a>
                   )}
                 </div>
                 {work.work_desc && <div>{work.work_desc}</div>}
@@ -118,10 +147,19 @@ export function Template1({ value, locale }: Props) {
             <div className="section-title" style={{ color }}>{getTitle(value, 'skillList', locale)}</div>
             {value.skillList.map((skill, i) => skill ? (
               <div key={i}>
-                <div className="info-name"><b>{skill.skill_name}</b></div>
+                <div className="section-info" style={{ marginTop: 8 }}>
+                  <b className="info-name">{skill.skill_name}</b>
+                  {skill.skill_level != null && (
+                    <span className="skill-rate">
+                      {'★'.repeat(Math.round(skill.skill_level / 20))}
+                      <span className="skill-rate-empty">{'★'.repeat(5 - Math.round(skill.skill_level / 20))}</span>
+                    </span>
+                  )}
+                </div>
                 {splitLines(skill.skill_desc).map((d, j) => d ? (
                   <div className="skill-detail-item" key={j}>
-                    <span style={{ color: '#ffc107', marginRight: 8 }}>✓</span>{d}
+                    <span className="icon" style={{ color: '#ffc107', marginRight: 8 }}>✅</span>
+                    {d}
                   </div>
                 ) : null)}
               </div>
@@ -134,7 +172,7 @@ export function Template1({ value, locale }: Props) {
             <div className="section-title" style={{ color }}>{getTitle(value, 'awardList', locale)}</div>
             {value.awardList.map((award, i) => (
               <div key={i}>
-                <span style={{ color: '#ffc107', marginRight: 8 }}>🎖️</span>
+                <span className="icon" style={{ color: '#ffc107', marginRight: 8 }}>🏆</span>
                 <b className="info-name">{award.award_info}</b>
                 {award.award_time && <span className="sub-info award-time">（{award.award_time}）</span>}
               </div>
@@ -157,7 +195,7 @@ export function Template1({ value, locale }: Props) {
                         {work.company_name}
                         <span className="sub-info">{work.department_name}</span>
                       </b>
-                      <span className="info-time">{start}{end ? ` ~ ${end}` : ''}</span>
+                      <span className="info-time">{start}{end ? ` ~ ${end}` : ' 至今'}</span>
                     </div>
                     <div className="work-description">{work.work_desc}</div>
                   </div>
