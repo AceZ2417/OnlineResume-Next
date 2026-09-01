@@ -7,20 +7,23 @@ import './index.less';
 
 type Props = { value: ResumeConfig; locale: Locale };
 
-/** Ribbon（色带卡角）标题卡片容器：纯 CSS 实现替代 antd Badge.Ribbon */
+/** Ribbon + Card 容器（纯 CSS 替代 antd Badge.Ribbon + Card） */
 function RibbonCard({
-  title, color, children,
-}: { title: string; color: string; children: ReactNode }) {
+  title, color, className, children,
+}: { title: string; color: string; className?: string; children: ReactNode }) {
   return (
-    <div className="ribbon-card">
+    <div className={`ribbon-card-wrapper ${className ?? ''}`}>
       <div className="ribbon" style={{ background: color }}>
-        <span>{title}</span>
+        <span className="ribbon-text">{title}</span>
       </div>
-      <div className="card-body">{children}</div>
+      <div className="card-bordered">
+        <div className="card-body">{children}</div>
+      </div>
     </div>
   );
 }
 
+/** main-info 区域的 section header（h1 带旋转方块装饰） */
 function SectionHeader({ title, color }: { title: string; color: string }) {
   return (
     <div className="section-header">
@@ -29,9 +32,7 @@ function SectionHeader({ title, color }: { title: string; color: string }) {
   );
 }
 
-function Wrapper({
-  title, color, children,
-}: { title: string; color: string; children: ReactNode }) {
+function MainWrapper({ title, color, children }: { title: string; color: string; children: ReactNode }) {
   return (
     <section>
       <SectionHeader title={title} color={color} />
@@ -49,107 +50,92 @@ export function Template3({ value, locale }: Props) {
 
   return (
     <div className="template3-resume resume-content">
-      {/* 顶部：个人信息 + 头像 */}
-      <RibbonCard title="个人信息" color={color}>
-        <div className="basic-info">
-          <div className="profile-info">
-            {profile?.name && <div className="name">{profile.name}</div>}
-            <div className="profile-list">
-              {profile?.mobile && <div className="item">📱 {profile.mobile}</div>}
-              {profile?.email && <div className="item">✉️ {profile.email}</div>}
-              {profile?.github && (
-                <div className="item">
-                  🐙 <a href={profile.github} target="_blank" rel="noreferrer">{profile.github}</a>
-                </div>
-              )}
-              {profile?.zhihu && (
-                <div className="item">
-                  💡 <a href={profile.zhihu} target="_blank" rel="noreferrer">{profile.zhihu}</a>
-                </div>
-              )}
-              {profile?.workExpYear && <div className="item">⏰ 工作经验：{profile.workExpYear}</div>}
-              {profile?.workPlace && <div className="item">📍 期望工作地：{profile.workPlace}</div>}
-              {profile?.positionTitle && <div className="item">💼 职位：{profile.positionTitle}</div>}
-            </div>
-          </div>
-          {!value.avatar?.hidden && (
-            <div className="profile-avatar">
-              <Avatar avatarSrc={value.avatar?.src} shape={value.avatar?.shape as any} size={value.avatar?.size ?? 150} />
-            </div>
-          )}
-        </div>
-      </RibbonCard>
-
-      {/* 工作 + 项目（1:1 分栏，小屏堆叠） */}
-      <div className="row-grid">
-        {value.workExpList?.length ? (
-          <RibbonCard title={getTitle(value, 'workExpList', locale)} color={color}>
-            <Wrapper title="" color={color}>
-              <div className="section-list">
-                {value.workExpList.map((work, i) => {
-                  const [start, end] = work.work_time ?? [];
-                  return (
-                    <div className="section-item" key={i}>
-                      <div className="section-info">
-                        <b>
-                          {work.company_name}
-                          <span className="sub">{work.department_name}</span>
-                        </b>
-                        <span className="sub">{start}{end ? ` ~ ${end}` : ''}</span>
-                      </div>
-                      <div className="work-desc">{work.work_desc}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </Wrapper>
-          </RibbonCard>
-        ) : null}
-
-        {value.projectList?.length ? (
-          <RibbonCard title={getTitle(value, 'projectList', locale)} color={color}>
-            <Wrapper title="" color={color}>
-              <div className="section-list">
-                {value.projectList.map((project, i) => (
-                  <div className="section-item" key={i}>
-                    <div className="section-info">
-                      <b>
-                        {project.project_name}
-                        <span className="sub">{project.project_time}</span>
-                      </b>
-                      {project.project_role && (
-                        <span className="tag" style={{ background: tagColor }}>{project.project_role}</span>
-                      )}
-                    </div>
-                    {project.project_desc && (
-                      <div className="section-detail"><b>项目描述：</b>{project.project_desc}</div>
-                    )}
-                    {project.project_content && (
-                      <div className="section-detail"><b>主要工作：</b><span className="project-content">{project.project_content}</span></div>
-                    )}
+      {/* basic-info：个人信息 + 教育 + 作品 + 自我介绍 + 技能 + 奖项（Ribbon Card 包裹） */}
+      <div className="basic-info">
+        {/* 个人信息 */}
+        <RibbonCard title="个人信息" color={color} className="section section-profile">
+          <div className="profile">
+            <div className="profile-info">
+              {profile?.name && <div className="name">{profile.name}</div>}
+              <div className="profile-list">
+                {profile?.mobile && (
+                  <div className="mobile">
+                    <span className="icon" style={{ color }}>📱</span>
+                    {profile.mobile}
                   </div>
-                ))}
+                )}
+                {profile?.email && (
+                  <div className="email">
+                    <span className="icon" style={{ color }}>✉️</span>
+                    {profile.email}
+                  </div>
+                )}
+                {profile?.github && (
+                  <div className="github">
+                    <span className="icon" style={{ color }}>🐙</span>
+                    <a href={profile.github} target="_blank" rel="noreferrer">{profile.github}</a>
+                  </div>
+                )}
+                {profile?.zhihu && (
+                  <div className="github">
+                    <span className="icon" style={{ color }}>💡</span>
+                    <a href={profile.zhihu} target="_blank" rel="noreferrer">{profile.zhihu}</a>
+                  </div>
+                )}
+                {profile?.workExpYear && (
+                  <div className="work-exp-year">
+                    <span className="icon" style={{ color }}>⏰</span>
+                    <span>工作经验: {profile.workExpYear}</span>
+                  </div>
+                )}
+                {profile?.workPlace && (
+                  <div className="work-place">
+                    <span className="icon" style={{ color }}>📍</span>
+                    <span>期望工作地: {profile.workPlace}</span>
+                  </div>
+                )}
+                {profile?.positionTitle && (
+                  <div className="expect-job">
+                    <span className="icon" style={{ color }}>💼</span>
+                    <span>职位: {profile.positionTitle}</span>
+                  </div>
+                )}
               </div>
-            </Wrapper>
-          </RibbonCard>
-        ) : null}
-      </div>
+            </div>
+            {/* 头像 */}
+            {!value.avatar?.hidden && (
+              <Avatar
+                avatarSrc={value.avatar?.src}
+                className="avatar"
+                shape={value.avatar?.shape as any}
+                size={value.avatar?.size ?? 84}
+              />
+            )}
+          </div>
+        </RibbonCard>
 
-      {/* 教育、技能、奖项、作品、自我介绍（等宽分栏或堆叠） */}
-      <div className="row-grid">
+        {/* 教育背景 */}
         {value.educationList?.length ? (
-          <RibbonCard title={getTitle(value, 'educationList', locale)} color={color}>
+          <RibbonCard title={getTitle(value, 'educationList', locale)} color={color} className="section section-education">
             {value.educationList.map((edu, i) => {
               const [start, end] = edu.edu_time;
               return (
                 <div key={i} className="education-item">
-                  <div className="edu-top">
-                    <b>{edu.school}</b>
-                    <span className="sub">{start}{end ? ` ~ ${end}` : ''}</span>
-                  </div>
                   <div>
-                    {edu.major && <span>{edu.major}</span>}
-                    {edu.academic_degree && <span className="sub" style={{ marginLeft: 4 }}>（{edu.academic_degree}）</span>}
+                    <span>
+                      <b>{edu.school}</b>
+                      <span style={{ marginLeft: '8px' }}>
+                        {edu.major && <span>{edu.major}</span>}
+                        {edu.academic_degree && (
+                          <span className="sub-info" style={{ marginLeft: '4px' }}>
+                            ({edu.academic_degree})
+                          </span>
+                        )}
+                      </span>
+                    </span>
+                    <span className="sub-info" style={{ float: 'right' }}>
+                      {start}{end ? ` ~ ${end}` : ' 至今'}
+                    </span>
                   </div>
                 </div>
               );
@@ -157,54 +143,120 @@ export function Template3({ value, locale }: Props) {
           </RibbonCard>
         ) : null}
 
-        {value.skillList?.length ? (
-          <RibbonCard title={getTitle(value, 'skillList', locale)} color={color}>
-            {value.skillList.map((s, i) => s ? (
+        {/* 个人作品 */}
+        {value.workList?.length ? (
+          <RibbonCard title={getTitle(value, 'workList', locale)} color={color} className="section section-work">
+            {value.workList.map((w, i) => (
               <div key={i}>
-                <b>{s.skill_name}</b>
-                {splitLines(s.skill_desc).map((d, j) => d ? (
-                  <div key={j} className="skill-item">
-                    <span style={{ color: tagColor, marginRight: 6 }}>✓</span>{d}
-                  </div>
-                ) : null)}
+                <div>
+                  <span style={{ color: '#ffc107', marginRight: '8px' }}>👑</span>
+                  <b className="info-name">{w.work_name}</b>
+                  {w.visit_link && (
+                    <a className="sub-info" href={w.visit_link} target="_blank" rel="noreferrer">访问链接</a>
+                  )}
+                </div>
+                {w.work_desc && <div>{w.work_desc}</div>}
               </div>
-            ) : null)}
+            ))}
+          </RibbonCard>
+        ) : null}
+
+        {/* 自我介绍 */}
+        {aboutme.join('').trim() ? (
+          <RibbonCard title={getTitle(value, 'aboutme', locale)} color={color} className="section section-aboutme">
+            {aboutme.map((d, i) => <div key={i}>{d}</div>)}
+          </RibbonCard>
+        ) : null}
+
+        {/* 专业技能 */}
+        {value.skillList?.length ? (
+          <RibbonCard title={getTitle(value, 'skillList', locale)} color={color} className="section section-skill">
+            {value.skillList.map((s, i) => {
+              const skills = splitLines(s.skill_desc).join('；');
+              return skills ? (
+                <div className="skill-item" key={i}>
+                  <span>
+                    <span style={{ color: '#ffc107', marginRight: '8px' }}>✅</span>
+                    {skills}
+                  </span>
+                  {s.skill_level && (
+                    <span className="skill-rate">
+                      {'★'.repeat(Math.round(s.skill_level / 20))}
+                      <span className="skill-rate-empty">{'★'.repeat(5 - Math.round(s.skill_level / 20))}</span>
+                    </span>
+                  )}
+                </div>
+              ) : null;
+            })}
+          </RibbonCard>
+        ) : null}
+
+        {/* 更多信息 */}
+        {value.awardList?.length ? (
+          <RibbonCard title={getTitle(value, 'awardList', locale)} color={color} className="section section-award">
+            {value.awardList.map((a, i) => (
+              <div key={i}>
+                <span style={{ color: '#ffc107', marginRight: '8px' }}>🏆</span>
+                <b className="info-name">{a.award_info}</b>
+                {a.award_time && <span className="sub-info award-time">({a.award_time})</span>}
+              </div>
+            ))}
           </RibbonCard>
         ) : null}
       </div>
 
-      <div className="row-grid">
-        {value.awardList?.length ? (
-          <RibbonCard title={getTitle(value, 'awardList', locale)} color={color}>
-            {value.awardList.map((a, i) => (
-              <div key={i}>
-                <span style={{ color: tagColor, marginRight: 6 }}>🎖️</span>
-                <b>{a.award_info}</b>
-                {a.award_time && <span className="sub">（{a.award_time}）</span>}
-              </div>
-            ))}
-          </RibbonCard>
+      {/* main-info：工作经历 + 项目经历（section-header h1 带旋转方块装饰） */}
+      <div className="main-info">
+        {value.workExpList?.length ? (
+          <MainWrapper title={getTitle(value, 'workExpList', locale)} color={color}>
+            <div className="section section-work-exp">
+              {value.workExpList.map((work, i) => {
+                const [start, end] = work.work_time ?? [];
+                return work ? (
+                  <div className="section-item" key={i}>
+                    <div className="section-info">
+                      <b className="info-name">
+                        {work.company_name}
+                        <span className="sub-info">{work.department_name}</span>
+                      </b>
+                      <span className="info-time">
+                        {start}{end ? ` ~ ${end}` : ' 至今'}
+                      </span>
+                    </div>
+                    <div className="work-description">{work.work_desc}</div>
+                  </div>
+                ) : null;
+              })}
+            </div>
+          </MainWrapper>
         ) : null}
 
-        {value.workList?.length ? (
-          <RibbonCard title={getTitle(value, 'workList', locale)} color={color}>
-            {value.workList.map((w, i) => (
-              <div key={i}>
-                <span style={{ color: tagColor, marginRight: 6 }}>🏆</span>
-                <b>{w.work_name}</b>
-                {w.work_desc && <div>{w.work_desc}</div>}
-                {w.visit_link && (
-                  <a href={w.visit_link} target="_blank" rel="noreferrer" className="sub">访问链接</a>
-                )}
-              </div>
-            ))}
-          </RibbonCard>
-        ) : null}
-
-        {aboutme.join('').trim() ? (
-          <RibbonCard title={getTitle(value, 'aboutme', locale)} color={color}>
-            {aboutme.map((d, i) => <div key={i}>{d}</div>)}
-          </RibbonCard>
+        {value.projectList?.length ? (
+          <MainWrapper title={getTitle(value, 'projectList', locale)} color={color}>
+            <div className="section section-project">
+              {value.projectList.map((project, i) => project ? (
+                <div className="section-item" key={i}>
+                  <div className="section-info">
+                    <b className="info-name">
+                      {project.project_name}
+                      <span className="info-time">{project.project_time}</span>
+                    </b>
+                    {project.project_role && (
+                      <span className="tag" style={{ background: tagColor }}>{project.project_role}</span>
+                    )}
+                  </div>
+                  <div className="section-detail">
+                    <span>项目描述：</span>
+                    <span>{project.project_desc}</span>
+                  </div>
+                  <div className="section-detail">
+                    <span>主要工作：</span>
+                    <span className="project-content">{project.project_content}</span>
+                  </div>
+                </div>
+              ) : null)}
+            </div>
+          </MainWrapper>
         ) : null}
       </div>
     </div>
