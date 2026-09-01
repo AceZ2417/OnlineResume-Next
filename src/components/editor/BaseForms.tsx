@@ -1,4 +1,5 @@
-import type { FieldErrors } from 'react-hook-form';
+import type { FieldErrors, UseFormSetValue } from 'react-hook-form';
+import { useRef, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { z } from 'zod';
 import {
@@ -130,8 +131,47 @@ export function EditorSection(props: {
 
 /* ---------- Avatar 分区 ---------- */
 
-export function AvatarForm({ register, errors, values }: { register: A; errors: E; values: FormState }) {
+export function AvatarForm({
+  register, errors, values, setValue,
+}: { register: A; errors: E; values: FormState; setValue: UseFormSetValue<FormState> }) {
+  const { t } = useTranslation();
   const avatar = values.avatar ?? {};
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+
+    // 压缩：超过 2MB 时用 canvas 缩到 800px 内，防止 localStorage 爆掉
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 800;
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          const ratio = Math.min(maxDim / width, maxDim / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          setValue('avatar.src' as any, canvas.toDataURL('image/jpeg', 0.85));
+        } else {
+          setValue('avatar.src' as any, dataUrl);
+        }
+      };
+      img.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
+    // 允许重复选择同一文件
+    e.target.value = '';
+  };
+
   return (
     <EditorSection i18nTitle="editor.section.avatar" open>
       <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 10 }}>
@@ -148,6 +188,33 @@ export function AvatarForm({ register, errors, values }: { register: A; errors: 
             register={register}
             error={errors.avatar?.src}
           />
+          <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={handleFile}
+            />
+            <button
+              type="button"
+              className="btn-ghost"
+              onClick={() => fileRef.current?.click()}
+              style={{ padding: '5px 12px', fontSize: 12 }}
+            >
+              📁 {t('editor.field.uploadAvatar')}
+            </button>
+            {avatar.src && avatar.src.startsWith('data:') && (
+              <button
+                type="button"
+                className="btn-ghost"
+                onClick={() => setValue('avatar.src' as any, '')}
+                style={{ padding: '5px 12px', fontSize: 12 }}
+              >
+                {t('editor.field.clearAvatar')}
+              </button>
+            )}
+          </div>
         </div>
       </div>
       <div className="field-row">

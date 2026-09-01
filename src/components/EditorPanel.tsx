@@ -48,7 +48,7 @@ export default function EditorPanel({ onDraftChange }: EditorPanelProps) {
   const themeColor = resume.theme?.color ?? '#5b8ff9';
 
   const {
-    register, handleSubmit, control, formState: { errors, isDirty, isValid, isSubmitting }, reset, watch, setError, clearErrors,
+    register, handleSubmit, control, formState: { errors, isDirty, isValid, isSubmitting }, reset, watch, setError, clearErrors, setValue,
   } = useForm<FormState>({
     resolver: resumeResolver(),
     defaultValues: resume as any,
@@ -122,7 +122,7 @@ export default function EditorPanel({ onDraftChange }: EditorPanelProps) {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-0" style={{ padding: '2px 4px 14px' }}>
-        <AvatarForm register={register} errors={errors} values={watch()} />
+        <AvatarForm register={register} errors={errors} values={watch()} setValue={setValue} />
         <ProfileForm register={register} errors={errors} />
         <EducationListForm register={register} errors={errors} array={educationFA as any} />
         <WorkExpListForm register={register} errors={errors} array={workExpFA as any} />

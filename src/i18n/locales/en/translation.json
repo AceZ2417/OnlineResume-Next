@@ -87,7 +87,9 @@
       "addWork": "Add a work entry",
       "invalidEmail": "Invalid email format",
       "dragSort": "Drag to reorder",
-      "dragSortDelete": "Delete this entry"
+      "dragSortDelete": "Delete this entry",
+      "uploadAvatar": "Upload Image",
+      "clearAvatar": "Clear Image"
     }
   },
   "preview": {

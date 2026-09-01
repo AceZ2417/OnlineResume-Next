@@ -87,7 +87,9 @@
       "addWork": "添加一项作品",
       "invalidEmail": "邮箱格式不正确",
       "dragSort": "拖动排序",
-      "dragSortDelete": "删除该项"
+      "dragSortDelete": "删除该项",
+      "uploadAvatar": "本地上传",
+      "clearAvatar": "清除头像"
     }
   },
   "preview": {
