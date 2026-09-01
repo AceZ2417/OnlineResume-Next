@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { resumeSchema, type ResumeConfig } from '@/schema/resumeSchema';
 import { defaultResume } from '@/data/defaultResume';
 import { useResumeStore } from '@/store/useResumeStore';
@@ -37,17 +37,29 @@ export function useResumeData() {
   const reset = useResumeStore((s) => s.reset);
   const currentResume = useResumeStore((s) => s.resume);
 
+  // 防止 fetch 无限循环：public/resume.json 与 defaultResume 内容相同，
+  // fetch 成功 → setResume(相同数据) → currentResume 引用变化 → useEffect 重跑
+  // → isSameAsDefault 仍为 true → 再次 fetch → 死循环。
+  // ref 标记确保 fetch 只执行一次。
+  const hasFetchedRef = useRef(false);
+
   useEffect(() => {
     let cancelled = false;
 
+    // 已 fetch 过 → 不再重复
+    if (hasFetchedRef.current) {
+      setLoading(false);
+      return;
+    }
+
     // 守卫：只有当用户未做过本地编辑时，才用远程 JSON 覆盖。
     // 否则 localStorage 中的用户编辑数据是权威，跳过远程。
-    // 注意：zustand persist 默认用 localStorage（同步），store 创建时已完成 rehydrate，
-    // 首次渲染时 currentResume 已是 localStorage 中的权威值。
     if (!isSameAsDefault(currentResume)) {
       setLoading(false);
       return;
     }
+
+    hasFetchedRef.current = true;
 
     const controller = new AbortController();
     const timeoutId = window.setTimeout(
