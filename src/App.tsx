@@ -196,7 +196,7 @@ export default function App() {
 
       {/* ---------- 主网格：左编辑器 / 右预览 ---------- */}
       <main className="mx-auto grid max-w-7xl gap-6 px-4 py-6 md:grid-cols-[2fr_3fr] app-main-grid">
-        <div className={`app-editor-col ${activeTab === 'edit' ? 'block' : 'hidden md:block'}`}>
+        <div className={`app-editor-col ${activeTab === 'edit' ? 'block' : 'hidden md:block'} md:max-h-[calc(100vh-180px)] md:overflow-y-auto`}>
           {/* draftChange：子组件回调，让草稿变更驱动预览和自动保存 */}
           <EditorPanel onDraftChange={setDraft} />
         </div>

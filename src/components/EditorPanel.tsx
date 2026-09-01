@@ -110,7 +110,7 @@ export default function EditorPanel({ onDraftChange }: EditorPanelProps) {
   };
 
   return (
-    <div style={wrapperStyle} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm overflow-hidden">
+    <div style={wrapperStyle} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
       <div className="text-sm text-gray-500 mb-3 flex items-center justify-between">
         <span>{t('editor.title')}</span>
         <span>
@@ -121,7 +121,7 @@ export default function EditorPanel({ onDraftChange }: EditorPanelProps) {
         </span>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-0" style={{ maxHeight: 'calc(100vh - 280px)', overflow: 'auto', padding: '2px 4px 14px' }}>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-0" style={{ padding: '2px 4px 14px' }}>
         <AvatarForm register={register} errors={errors} values={watch()} />
         <ProfileForm register={register} errors={errors} />
         <EducationListForm register={register} errors={errors} array={educationFA as any} />
