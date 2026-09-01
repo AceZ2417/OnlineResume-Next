@@ -36,18 +36,14 @@ export function useResumeData() {
   const setResume = useResumeStore((s) => s.setResume);
   const reset = useResumeStore((s) => s.reset);
   const currentResume = useResumeStore((s) => s.resume);
-  // persist 重新水化完成后才允许读取 localStorage 里的权威数据
-  const hasHydrated = useResumeStore.persist.hasHydrated();
 
   useEffect(() => {
     let cancelled = false;
 
-    // 1. Zustand persist 尚未完成 localStorage 读取 → 无法判断 isSameAsDefault，
-    //    直接 return，下一次重渲染（hydrate 后 state 更新触发 useEffect 重跑）。
-    if (!hasHydrated) return;
-
-    // 2. 守卫：只有当用户未做过本地编辑时，才用远程 JSON 覆盖。
-    //    否则 localStorage 中的用户编辑数据是权威，跳过远程。
+    // 守卫：只有当用户未做过本地编辑时，才用远程 JSON 覆盖。
+    // 否则 localStorage 中的用户编辑数据是权威，跳过远程。
+    // 注意：zustand persist 默认用 localStorage（同步），store 创建时已完成 rehydrate，
+    // 首次渲染时 currentResume 已是 localStorage 中的权威值。
     if (!isSameAsDefault(currentResume)) {
       setLoading(false);
       return;
@@ -82,7 +78,6 @@ export function useResumeData() {
             : String(err);
         console.warn('[useResumeData] 远程 resume.json 加载失败，使用内置默认数据。', message);
         setError(message);
-        // 不调用 setResume，store 初始值已经是 defaultResume
       })
       .finally(() => {
         window.clearTimeout(timeoutId);
@@ -94,8 +89,7 @@ export function useResumeData() {
       window.clearTimeout(timeoutId);
       controller.abort();
     };
-    // 显式依赖 hasHydrated：hydrate 完成会触发重渲染，useEffect 重新执行
-  }, [setResume, currentResume, hasHydrated]);
+  }, [setResume, currentResume]);
 
   /** 手动触发重新加载 */
   const reload = useCallback(() => {
