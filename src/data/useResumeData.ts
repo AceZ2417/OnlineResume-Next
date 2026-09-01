@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { resumeSchema, type ResumeConfig } from '@/schema/resumeSchema';
 import { defaultResume } from '@/data/defaultResume';
 import { useResumeStore } from '@/store/useResumeStore';
@@ -35,31 +35,20 @@ export function useResumeData() {
 
   const setResume = useResumeStore((s) => s.setResume);
   const reset = useResumeStore((s) => s.reset);
-  const currentResume = useResumeStore((s) => s.resume);
 
-  // 防止 fetch 无限循环：public/resume.json 与 defaultResume 内容相同，
-  // fetch 成功 → setResume(相同数据) → currentResume 引用变化 → useEffect 重跑
-  // → isSameAsDefault 仍为 true → 再次 fetch → 死循环。
-  // ref 标记确保 fetch 只执行一次。
-  const hasFetchedRef = useRef(false);
-
+  // useEffect 依赖空数组：只在组件挂载时执行一次。
+  // 不依赖 currentResume —— 否则 fetch 成功 → setResume → currentResume 引用变化
+  // → useEffect 重跑 → 无限循环（public/resume.json 与 defaultResume 内容相同）。
   useEffect(() => {
     let cancelled = false;
-
-    // 已 fetch 过 → 不再重复
-    if (hasFetchedRef.current) {
-      setLoading(false);
-      return;
-    }
+    // 直接从 store 读取当前值（不依赖闭包中的 currentResume）
+    const current = useResumeStore.getState().resume;
 
     // 守卫：只有当用户未做过本地编辑时，才用远程 JSON 覆盖。
-    // 否则 localStorage 中的用户编辑数据是权威，跳过远程。
-    if (!isSameAsDefault(currentResume)) {
+    if (!isSameAsDefault(current)) {
       setLoading(false);
       return;
     }
-
-    hasFetchedRef.current = true;
 
     const controller = new AbortController();
     const timeoutId = window.setTimeout(
@@ -101,7 +90,8 @@ export function useResumeData() {
       window.clearTimeout(timeoutId);
       controller.abort();
     };
-  }, [setResume, currentResume]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /** 手动触发重新加载 */
   const reload = useCallback(() => {
