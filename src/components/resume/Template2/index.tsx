@@ -3,6 +3,7 @@ import { Avatar } from '@/components/Avatar';
 import type { ResumeConfig } from '@/schema/resumeSchema';
 import type { Locale } from '@/store/useResumeStore';
 import { getTitle, splitLines } from '../shared';
+import { PhoneFilled, MailFilled, GithubFilled, ZhihuCircleFilled, ScheduleFilled, EnvironmentFilled, HeartFilled, CrownFilled, CheckCircleFilled, TrophyFilled } from '@ant-design/icons';
 import './index.less';
 
 type Props = { value: ResumeConfig; locale: Locale };
@@ -38,43 +39,43 @@ export function Template2({ value, locale }: Props) {
             <div className="profile-list">
               {profile?.mobile && (
                 <div className="mobile">
-                  <span className="icon" style={{ color }}>📱</span>
+                  <PhoneFilled style={{ color, opacity: 0.85 }} />
                   {profile.mobile}
                 </div>
               )}
               {profile?.email && (
                 <div className="email">
-                  <span className="icon" style={{ color }}>✉️</span>
+                  <MailFilled style={{ color, opacity: 0.85 }} />
                   {profile.email}
                 </div>
               )}
               {profile?.github && (
                 <div className="github">
-                  <span className="icon" style={{ color }}>🐙</span>
+                  <GithubFilled style={{ color, opacity: 0.85 }} />
                   <a href={profile.github} target="_blank" rel="noreferrer">{profile.github}</a>
                 </div>
               )}
               {profile?.zhihu && (
                 <div className="github">
-                  <span className="icon" style={{ color }}>💡</span>
+                  <ZhihuCircleFilled style={{ color, opacity: 0.85 }} />
                   <a href={profile.zhihu} target="_blank" rel="noreferrer">{profile.zhihu}</a>
                 </div>
               )}
               {profile?.workExpYear && (
                 <div className="work-exp-year">
-                  <span className="icon" style={{ color }}>⏰</span>
+                  <ScheduleFilled style={{ color, opacity: 0.85 }} />
                   <span>工作经验: {profile.workExpYear}</span>
                 </div>
               )}
               {profile?.workPlace && (
                 <div className="work-place">
-                  <span className="icon" style={{ color }}>📍</span>
+                  <EnvironmentFilled style={{ color, opacity: 0.85 }} />
                   <span>期望工作地: {profile.workPlace}</span>
                 </div>
               )}
               {profile?.positionTitle && (
                 <div className="expect-job">
-                  <span className="icon" style={{ color }}>💼</span>
+                  <HeartFilled style={{ color, opacity: 0.85 }} />
                   <span>职位: {profile.positionTitle}</span>
                 </div>
               )}
@@ -126,7 +127,7 @@ export function Template2({ value, locale }: Props) {
             {value.workList.map((w, i) => (
               <div key={i}>
                 <div>
-                  <span style={{ color: '#ffc107', marginRight: '8px' }}>👑</span>
+                  <CrownFilled style={{ color: '#ffc107', marginRight: '8px' }} />
                   <b className="info-name">{w.work_name}</b>
                   {w.visit_link && (
                     <a className="sub-info" href={w.visit_link} target="_blank" rel="noreferrer">访问链接</a>
@@ -153,7 +154,7 @@ export function Template2({ value, locale }: Props) {
               return skills ? (
                 <div className="skill-item" key={i}>
                   <span>
-                    <span style={{ color: '#ffc107', marginRight: '8px' }}>✅</span>
+                    <CheckCircleFilled style={{ color: '#ffc107', marginRight: '8px' }} />
                     {skills}
                   </span>
                   {s.skill_level && (
@@ -173,7 +174,7 @@ export function Template2({ value, locale }: Props) {
           <Wrapper title={getTitle(value, 'awardList', locale)} className="section-award" color={color}>
             {value.awardList.map((a, i) => (
               <div key={i}>
-                <span style={{ color: '#ffc107', marginRight: '8px' }}>🏆</span>
+                <TrophyFilled style={{ color: '#ffc107', marginRight: '8px' }} />
                 <b className="info-name">{a.award_info}</b>
                 {a.award_time && <span className="sub-info award-time">({a.award_time})</span>}
               </div>
